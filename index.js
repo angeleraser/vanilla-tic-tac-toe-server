@@ -1,10 +1,6 @@
 const express = require("express");
 const app = express();
 const http = require("http");
-const cors = require("cors");
-
-app.options("*", cors());
-
 const server = http.createServer(app);
 
 const { Server } = require("socket.io");
@@ -16,7 +12,8 @@ const io = new Server(server, {
 const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
+  res.write(`<h1>Tic Tac Toe Server - Start on Port: ${PORT} </h1>`);
+  res.end();
 });
 
 server.listen(PORT, () => {
