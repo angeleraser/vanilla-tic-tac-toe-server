@@ -8,13 +8,9 @@
   },
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
-    "heroku-postbuild": "npm run start"
+    "dev": "nodemon index.js"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
-  },
-  "engines": {
-    "node": "14.17.1"
   }
 }
