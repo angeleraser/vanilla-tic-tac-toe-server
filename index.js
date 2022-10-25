@@ -17,33 +17,53 @@ server.listen(3000, () => {
   console.log("listening on *:3000");
 });
 
+const EVENTS = {
+  BOARD_CLICK: "board-click",
+  JOIN_ROOM: "join-room",
+  ALLOW_WRITE: "allow-write",
+  UNABLE_JOIN: "unable-join",
+  TWO_PLAYERS_JOIN: "two-players-join",
+  PLAYER_DISCONNECT: "player-disconnect",
+  RECOVER_STATE: "recover-state",
+  RESET: "reset",
+  QUIT: "quit",
+};
+
 io.on("connection", (socket) => {
   const getRoomClients = (roomid) => {
     return io.sockets.adapter.rooms.get(roomid) || new Set();
   };
 
-  socket.on("board-click", (payload) => {
-    socket.to(payload.roomid).emit("board-click", payload);
+  socket.on(EVENTS.BOARD_CLICK, (payload) => {
+    socket.to(payload.roomid).emit(EVENTS.BOARD_CLICK, payload);
   });
 
-  socket.on("recover-state", (payload) => {
-    socket.to(payload.roomid).emit("recover-state", payload);
+  socket.on(EVENTS.RECOVER_STATE, (payload) => {
+    socket.to(payload.roomid).emit(EVENTS.RECOVER_STATE, payload);
   });
 
-  socket.on("join-room", (payload) => {
+  socket.on(EVENTS.JOIN_ROOM, (payload) => {
     const { roomid } = payload;
     const clients = getRoomClients(roomid);
 
     socket.join(roomid);
 
     if (clients.size === 2) {
-      socket.to(roomid).emit("two-players-join", { socketId: socket.id });
+      socket.to(roomid).emit(EVENTS.TWO_PLAYERS_JOIN, { socketId: socket.id });
     }
 
     if (clients.size > 2) {
-      io.to(socket.id).emit("unable-join");
+      io.to(socket.id).emit(EVENTS.UNABLE_JOIN);
       socket.leave(roomid);
     }
+  });
+
+  socket.on(EVENTS.RESET, ({ roomid }) => {
+    socket.to(roomid).emit(EVENTS.RESET, { socketId: socket.id });
+  });
+
+  socket.on(EVENTS.QUIT, ({ roomid }) => {
+    socket.to(roomid).emit(EVENTS.QUIT, { socketId: socket.id });
   });
 
   socket.on("disconnecting", () => {
