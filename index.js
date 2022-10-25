@@ -30,6 +30,7 @@ const EVENTS = {
   RECOVER_STATE: "recover-state",
   RESET: "reset",
   QUIT: "quit",
+  MATCH_READY: "match-ready",
 };
 
 io.on("connection", (socket) => {
@@ -56,9 +57,17 @@ io.on("connection", (socket) => {
     }
 
     if (clients.size > 2) {
-      io.to(socket.id).emit(EVENTS.UNABLE_JOIN);
+      io.to(socket.id).emit(EVENTS.UNABLE_JOIN, {
+        socketId: socket.id,
+        roomid,
+      });
+
       socket.leave(roomid);
     }
+  });
+
+  socket.on(EVENTS.MATCH_READY, ({ roomid }) => {
+    socket.to(roomid).emit(EVENTS.MATCH_READY, { socketId: socket.id });
   });
 
   socket.on(EVENTS.RESET, ({ roomid }) => {
