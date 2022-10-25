@@ -3,7 +3,8 @@ const app = express();
 const http = require("http");
 const cors = require("cors");
 
-app.use(cors);
+app.options("*", cors());
+
 const server = http.createServer(app);
 
 const { Server } = require("socket.io");
@@ -19,7 +20,7 @@ app.get("/", (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log("listening on *:" + PORT);
+  console.log("listening on port: " + PORT);
 });
 
 const EVENTS = {
