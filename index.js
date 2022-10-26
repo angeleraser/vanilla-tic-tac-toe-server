@@ -27,7 +27,6 @@ const EVENTS = {
   UNABLE_JOIN: "unable-join",
   TWO_PLAYERS_JOIN: "two-players-join",
   PLAYER_DISCONNECT: "player-disconnect",
-  RECOVER_STATE: "recover-state",
   RESET: "reset",
   QUIT: "quit",
   MATCH_READY: "match-ready",
@@ -40,10 +39,6 @@ io.on("connection", (socket) => {
 
   socket.on(EVENTS.BOARD_CLICK, (payload) => {
     socket.to(payload.roomid).emit(EVENTS.BOARD_CLICK, payload);
-  });
-
-  socket.on(EVENTS.RECOVER_STATE, (payload) => {
-    socket.to(payload.roomid).emit(EVENTS.RECOVER_STATE, payload);
   });
 
   socket.on(EVENTS.JOIN_ROOM, (payload) => {
@@ -80,10 +75,6 @@ io.on("connection", (socket) => {
 
   socket.on("disconnecting", () => {
     const [socketId, roomid] = [...socket.rooms];
-    io.to(roomid).emit("player-disconnect", { socketId });
-  });
-
-  socket.on("disconnect", () => {
-    console.log("Client disconnected");
+    io.to(roomid).emit(EVENTS.PLAYER_DISCONNECT, { socketId });
   });
 });
